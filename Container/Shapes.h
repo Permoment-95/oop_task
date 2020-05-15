@@ -6,10 +6,13 @@
 
 using namespace std;
 
-class Shape : public Named
+class Shape : public Printable
 {
 public:
-	Shape(string const& name) : Named(name)
+
+	Shape() { sm_shapes++; }
+
+	Shape(string const& name)
 	{
 		sm_shapes++;
 	}
@@ -23,7 +26,7 @@ public:
 
 	friend ostream& operator << (ostream& ioStream, Shape const& p)
 	{
-		ioStream << p.m_name << "\n";
+		//ioStream << p << "\n";
 		p.print(ioStream);
 		return ioStream;
 	}
@@ -36,12 +39,13 @@ private:
 	static int sm_shapes;
 };
 
+
 int Shape::sm_shapes = 0;
 
-class Point : public Shape
+class Point : public Shape, Named
 {
 public:
-	Point(float x, float y) : Shape("Point")
+	Point(float x, float y) : Named("Point")
 	{
 		m_x = x;
 		m_y = y;
@@ -59,6 +63,7 @@ public:
 	}
 	void print(ostream& out) const
 	{
+		out << m_name << endl;
 		out << "(" << m_x << ", " << m_y << ")" << endl;
 	}
 
@@ -66,10 +71,10 @@ private:
 	float m_x, m_y;
 };
 
-class Circle : public Shape
+class Circle : public Shape, Named
 {
 public:
-	Circle(float radius, Point& p) : Shape("Circle"), m_center(p), m_radius(radius)
+	Circle(float radius, Point& p) : Named("Circle"), m_center(p), m_radius(radius)
 	{
 		m_area = (float)M_PI * m_radius * m_radius;
 	}
@@ -78,6 +83,7 @@ public:
 
 	void print(ostream& out) const
 	{
+		out << m_name << endl;
 		m_center.print(out);
 		out << "Radius: " << m_radius << " Area: " << m_area << endl;
 	}
@@ -87,16 +93,17 @@ private:
 	Point m_center;
 };
 
-class Rectangle : public Shape
+class Rectangle : public Shape, Named
 {
 public:
-	Rectangle(Point& x1, Point& x2) : Shape("Rectangle"), m_x1(x1), m_x2(x2)
+	Rectangle(Point& x1, Point& x2) : Named("Rectangle"), m_x1(x1), m_x2(x2)
 	{
 		m_area = abs((m_x1.X() - m_x2.X()) * (m_x2.Y() - m_x1.Y()));
 	}
 	~Rectangle() { }
 	void print(ostream& out) const
 	{
+		out << m_name << endl;
 		m_x1.print(out);
 		m_x2.print(out);
 		out << "Area: " << m_area << endl;
@@ -106,10 +113,10 @@ private:
 	float m_area;
 };
 
-class Square : public Shape
+class Square : public Shape, Named
 {
 public:
-	Square(Point& center, float side) : Shape("Square"), m_center(center), m_side(side)
+	Square(Point& center, float side) : Named("Square"), m_center(center), m_side(side)
 	{
 		m_area = side * side;
 	}
@@ -117,6 +124,7 @@ public:
 	~Square() {}
 	void print(ostream& out) const
 	{
+		out << m_name << endl;
 		m_center.print(out);
 		out << "Area: " << m_area << endl;
 	}
@@ -125,10 +133,10 @@ private:
 	float m_side, m_area;
 };
 
-class Polyline : public Shape
+class Polyline : public Shape, Named
 {
 public:
-	Polyline(Container<Point*>& points) : m_length(0), m_points(&points), Shape("Polyline")
+	Polyline(Container<Point*>& points) : m_length(0), m_points(&points), Named("Polyline")
 	{
 		if (m_points->size() == 0) return;
 		calcLength();
@@ -182,6 +190,7 @@ public:
 
 	void print(ostream& out) const
 	{
+		out << m_name << endl;
 		for (uint32_t i = 0; i < m_points->size(); i++)
 		{
 			(*m_points)[i]->print(out);
@@ -193,10 +202,10 @@ private:
 	float m_length;
 };
 
-class Polygon : public Shape
+class Polygon : public Shape, Named
 {
 public:
-	Polygon(Polyline& shape) : m_shape(&shape), Shape("Polygon")
+	Polygon(Polyline& shape) : m_shape(&shape), Named("Polygon")
 	{
 		Point* startPoint = new Point(shape.getStartPoint().X(), shape.getStartPoint().Y());
 		shape.addPoint(*startPoint);
@@ -208,6 +217,7 @@ public:
 	}
 	void print(ostream& out) const 
 	{ 
+		out << m_name << endl;
 		m_shape->print(out); 
 	}
 private:

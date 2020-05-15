@@ -13,7 +13,7 @@ public:
 class Named : Printable
 {
 public:
-	Named(string name)
+	Named(string const & name)
 	{
 		m_name = name;
 	}
